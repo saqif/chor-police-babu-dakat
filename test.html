@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ClearRect Test</title>
+<style>
+body {
+  margin:0;
+  padding:0;
+  background:#000;
+}
+canvas {
+  display:block;
+  margin:20px auto;
+  border:1px dashed #0f0;
+}
+</style>
+<script>
+var canvas, ctx, loop, square, square2, rightKey = false, leftKey = false, upKey = false, downKey = false;
+
+function init() {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  square = {x:10,y:10,w:20,h:20};
+  square2 = {x:400,y:10,w:20,h:20};
+  draw();
+  document.addEventListener('keydown',keyDown,false);
+  document.addEventListener('keyup',keyUp,false);
+}
+function clearRect() {
+  ctx.clearRect(square2.x,square2.y,square2.w,square2.h);
+  ctx.clearRect(square.x,square.y,square.w,square.h);
+}
+function drawSquare() {
+  if (rightKey) square.x += 5;
+  else if (leftKey) square.x -= 5;
+  if (upKey) square.y -= 5;
+  else if (downKey) square.y += 5;
+  ctx.fillStyle = '#0f0';
+  ctx.fillRect(square.x,square.y,square.w,square.h);
+  square2.y += 1;
+  ctx.fillRect(square2.x,square2.y,square2.w,square2.h);
+}
+function keyDown(e) {
+  if (e.keyCode == 39) rightKey = true;
+  else if (e.keyCode == 37) leftKey = true;
+  if (e.keyCode == 38) upKey = true;
+  else if (e.keyCode == 40) downKey = true;
+}
+
+function keyUp(e) {
+  if (e.keyCode == 39) rightKey = false;
+  else if (e.keyCode == 37) leftKey = false;
+  if (e.keyCode == 38) upKey = false;
+  else if (e.keyCode == 40) downKey = false;
+}
+function draw() {
+  clearRect();
+  drawSquare();
+  loop = setTimeout(draw, 1000/30);
+}
+window.onload = init;
+</script>
+</head>
+
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+</body>
+</html>
