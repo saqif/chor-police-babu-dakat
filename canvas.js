@@ -1,17 +1,22 @@
 console.log("cheers!");
 
+var c;
+var myGameArea;
 var animateStart = true;
+var gutis = [{name: "Babu", points: 100},
+			 {name: "Police", points: 90},
+			 {name: "Dakat", points: 80},
+			 {name: "Chor", points: 70}];
 
-function shuffle(array) {
-  array.sort(() => Math.random() - 0.5);
-}
+var randomGuti = [0,1,2,3];
+var rectWidth = 100;
+var rectHeight = 100;
+var pawns = [];
+var gutiCoordinates = [(window.innerWidth-((4*rectWidth)+20))/2,
+					   (window.innerWidth-(2*rectWidth))/2,
+					   (window.innerWidth+20)/2,
+					   (window.innerWidth+(2*rectWidth)+40)/2];
 
-var canvas = document.querySelector('canvas');
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-var c = canvas.getContext('2d');
 
 var colors = [  'blue', 
 				'green', 
@@ -30,6 +35,33 @@ var colors = [  'blue',
 var mouse = {
 	x: undefined,
 	y: undefined
+}
+
+function shuffle(array) {
+	array.sort(() => Math.random() - 0.5);
+}  
+
+function gamearea() {
+	this.canvas = document.createElement("canvas");
+	this.canvas.width = window.innerWidth;
+	this.canvas.height = window.innerHeight;    
+	document.getElementById("canvascontainer").appendChild(this.canvas);
+	c = this.canvas.getContext("2d");
+	
+	this.start = function() {
+		shuffle(randomGuti);
+		initializeBoard();
+		animateStart = true;
+		animate();
+	}
+
+	this.stop = function() {
+		animateStart = false;
+	}
+
+	this.clear = function(){
+		c.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	}
 }
 
 window.addEventListener('click', function(event){
@@ -79,6 +111,7 @@ function Pawn(x, y, w, h, color, guti){
 	}
 
 	this.update = function(dx, dy, pos){
+		
 		if(pos == 0){
 			if(this.x > gutiCoordinates[0]){
 				this.x -= dx;
@@ -123,22 +156,6 @@ function Pawn(x, y, w, h, color, guti){
 	}
 }
 
-var gutis = [{name: "Babu", points: 100},
-			 {name: "Police", points: 90},
-			 {name: "Dakat", points: 80},
-			 {name: "Chor", points: 70}];
-
-var randomGuti = [0,1,2,3];
-shuffle(randomGuti);
-
-var rectWidth = 100;
-var rectHeight = 100;
-var pawns = [];
-
-var gutiCoordinates = [(window.innerWidth-((4*rectWidth)+20))/2,
-					   (window.innerWidth-(2*rectWidth))/2,
-					   (window.innerWidth+20)/2,
-					   (window.innerWidth+(2*rectWidth)+40)/2];
 
 function initializeBoard(){
 	for(var i = 0; i < 4; i++){
@@ -162,10 +179,20 @@ function animate(){
 	pawns[3].update(4,0,3);
 }
 
-initializeBoard();
-animate();
-
 function reset(){
 	console.log("reset");
-	c.clearRect(0, 0, window.innerWidth, window.innerHeight);
+	myGameArea.stop();
+    myGameArea.clear();
+	myGameArea = {};
+	pawns = [];
+	document.getElementById("canvascontainer").innerHTML = "";
+    start();
+}
+
+function start(){
+	console.log("starting game...");
+	myGameArea = new gamearea();
+	myGameArea.start();
+	document.getElementById("play").style.display = "none";
+	document.getElementById("reset").style.display = "block";
 }
